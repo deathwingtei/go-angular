@@ -1,0 +1,251 @@
+<div class="container">
+  
+  <!-- 1. Header Section -->
+  <header class="header">
+    <div class="brand-section">
+      <span class="brand-icon">🏠</span>
+      <div>
+        <h1 class="title">Smart Home Inventory</h1>
+        <p class="subtitle">ระบบจัดการและทำนายสต๊อกของใช้ในบ้านอัจฉริยะ (Go + Angular Core)</p>
+      </div>
+    </div>
+    <button class="btn-primary" (click)="openAddModal()">
+      <span>➕ เพิ่มของเข้าบ้าน</span>
+    </button>
+  </header>
+
+  <!-- 2. Summary & Alerts Banners -->
+  <section class="summary-cards">
+    <div class="summary-card glass-panel total">
+      <div class="summary-icon-wrapper">📦</div>
+      <div class="summary-info">
+        <h3>สินค้าทั้งหมด</h3>
+        <p class="num">{{ inventoryService.totalItems() }}</p>
+      </div>
+    </div>
+
+    <div class="summary-card glass-panel warning">
+      <div class="summary-icon-wrapper">⚠️</div>
+      <div class="summary-info">
+        <h3>สินค้าใกล้หมด</h3>
+        <p class="num">{{ inventoryService.lowStockCount() }}</p>
+      </div>
+    </div>
+
+    <div class="summary-card glass-panel critical">
+      <div class="summary-icon-wrapper">
+        <span class="pulse-circle" *ngIf="inventoryService.criticalCount() > 0"></span>
+        🚨
+      </div>
+      <div class="summary-info">
+        <h3>วิกฤต (ต้องซื้อด่วน)</h3>
+        <p class="num">{{ inventoryService.criticalCount() }}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Filters & Search bar -->
+  <section class="controls-bar glass-panel">
+    <div class="search-wrapper">
+      <span class="search-icon">🔍</span>
+      <input 
+        type="text" 
+        class="search-input" 
+        placeholder="ค้นหาชื่อของใช้ในบ้าน..." 
+        [value]="searchQuery()"
+        (input)="updateSearch($event)"
+      />
+    </div>
+
+    <div class="category-tags">
+      <button 
+        class="cat-tag" 
+        [class.active]="selectedCategory() === ''"
+        (click)="selectCategory('')"
+      >
+        ทั้งหมด
+      </button>
+      <button 
+        *ngFor="let cat of inventoryService.categories()"
+        class="cat-tag" 
+        [class.active]="selectedCategory() === cat.name"
+        (click)="selectCategory(cat.name)"
+      >
+        {{ cat.name }} ({{ cat.items.length }})
+      </button>
+    </div>
+  </section>
+
+  <!-- 4. Main Inventory Items Grid -->
+  <main class="items-grid" *ngIf="filteredItems().length > 0; else noItems">
+    
+    <div *ngFor="let item of filteredItems(); trackBy: trackByItemId" class="item-card glass-panel glass-panel-neon">
+      
+      <!-- Card Header -->
+      <div class="item-card-header">
+        <span class="item-badge">{{ item.category }}</span>
+        <h2 class="item-name">{{ item.name }}</h2>
+      </div>
+
+      <!-- Stock Meter & Numbers -->
+      <div class="stock-visualization">
+        <div class="circular-progress" [class]="getStockLevelClass(item)">
+          <svg>
+            <circle class="bg" cx="35" cy="35" r="30"></circle>
+            <circle 
+              class="progress" 
+              cx="35" 
+              cy="35" 
+              r="30" 
+              [attr.stroke-dasharray]="188.4"
+              [attr.stroke-dashoffset]="getStrokeDashoffset(item)"
+            ></circle>
+          </svg>
+          <span class="percentage-text">{{ getStockPercent(item) }}%</span>
+        </div>
+
+        <div class="stock-text">
+          <div>
+            <span class="stock-current">{{ item.currentStock }}</span>
+            <span class="stock-base">/ {{ item.baseQuantity }} {{ item.unit }}</span>
+          </div>
+          <span class="stock-status-label" [class]="getStockTextClass(item)">
+            {{ getStockStatusLabel(item) }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Replenishment Prediction -->
+      <div class="prediction-section">
+        <h4 class="predict-title">🔮 คาดการณ์สินค้าหมด</h4>
+        <div class="predict-date">{{ formatDate(item.replenishmentDate) }}</div>
+        <div class="predict-banner" [class]="getStockLevelClass(item)">
+          {{ getDaysRemainingLabel(item) }}
+        </div>
+      </div>
+
+      <!-- Card Quick Action Buttons -->
+      <div class="card-actions">
+        <button class="btn-action btn-consume" (click)="quickConsume(item)">
+          <span>📉 ตัดออก ({{ getConsumeAmount(item) }} {{ item.unit }})</span>
+        </button>
+        <button class="btn-action btn-restock" (click)="restockItem(item.id)">
+          <span>🔄 เติมสต๊อก</span>
+        </button>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Empty State -->
+  <ng-template #noItems>
+    <div class="empty-state glass-panel">
+      <span class="empty-icon">📂</span>
+      <h3 class="empty-title">ไม่พบสินค้าในระบบ</h3>
+      <p class="empty-desc">ลองพิมพ์ค้นหาชื่ออื่น หรือปรับหมวดหมู่สินค้า หรือกดปุ่ม "เพิ่มของเข้าบ้าน" เพื่อลงทะเบียนสินค้า</p>
+      <button class="btn-primary" (click)="openAddModal()">
+        <span>➕ เพิ่มของเข้าบ้าน</span>
+      </button>
+    </div>
+  </ng-template>
+
+  <!-- 5. Add New Item Modal Form (Sliding Popup overlay) -->
+  <div class="modal-overlay" [class.open]="isAddModalOpen()">
+    <div class="modal-container glass-panel glass-panel-neon">
+      
+      <div class="modal-header">
+        <h2 class="modal-title">📦 เพิ่มของใช้ใหม่</h2>
+        <button class="btn-close" (click)="closeAddModal()">×</button>
+      </div>
+
+      <form (submit)="submitNewItem($event)">
+        <div class="form-group">
+          <label class="form-label">ชื่อสินค้า</label>
+          <input 
+            type="text" 
+            class="form-input" 
+            placeholder="เช่น สบู่อาบน้ำ, ขนมปัง" 
+            name="name"
+            required
+            #nameInput
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">หมวดหมู่</label>
+          <select class="form-select" name="category" required #categorySelect>
+            <option value="ตู้เย็น / เครื่องดื่ม">ตู้เย็น / เครื่องดื่ม</option>
+            <option value="ห้องครัว / ของกินทั่วไป">ห้องครัว / ของกินทั่วไป</option>
+            <option value="ห้องน้ำ / ซักรีด">ห้องน้ำ / ซักรีด</option>
+            <option value="เสบียง / ของแห้ง">เสบียง / ของแห้ง</option>
+            <option value="อื่น ๆ">อื่น ๆ</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">จำนวนที่มี (ปัจจุบัน)</label>
+            <input 
+              type="number" 
+              class="form-input" 
+              placeholder="0" 
+              name="current"
+              step="any"
+              required
+              #currentInput
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label">จำนวนเต็ม (ความจุ)</label>
+            <input 
+              type="number" 
+              class="form-input" 
+              placeholder="100" 
+              name="base"
+              step="any"
+              required
+              #baseInput
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">หน่วยนับ</label>
+          <select class="form-select" name="unit" required #unitSelect>
+            <option value="ขวด">ขวด (bottle)</option>
+            <option value="ml">มิลลิลิตร (ml)</option>
+            <option value="ชิ้น">ชิ้น (pcs)</option>
+            <option value="kg">กิโลกรัม (kg)</option>
+            <option value="กล่อง">กล่อง (box)</option>
+          </select>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-cancel" (click)="closeAddModal()">ยกเลิก</button>
+          <button type="submit" class="btn-submit">💾 บันทึกสินค้า</button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- SVG Metallic Neon Gradients definition -->
+  <svg style="width: 0; height: 0; position: absolute;" aria-hidden="true">
+    <defs>
+      <linearGradient id="greenGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#10b981" />
+        <stop offset="100%" stop-color="#059669" />
+      </linearGradient>
+      <linearGradient id="orangeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#f59e0b" />
+        <stop offset="100%" stop-color="#d97706" />
+      </linearGradient>
+      <linearGradient id="redGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#ef4444" />
+        <stop offset="100%" stop-color="#dc2626" />
+      </linearGradient>
+    </defs>
+  </svg>
+
+</div>
