@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>คู่มือแบบฝึกหัดพัฒนา Full-Stack: Smart Home Inventory</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-color: #0c0e1a;
+      --card-bg: rgba(22, 25, 54, 0.7);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --primary: #00f0ff;
+      --secondary: #a855f7;
+      --text-color: #e2e8f0;
+      --text-muted: #94a3b8;
+      --code-bg: rgba(5, 6, 15, 0.85);
+      --danger: #f43f5e;
+      --warning: #eab308;
+      --success: #10b981;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-family: 'Sarabun', sans-serif;
+      line-height: 1.7;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+    }
+
+    .print-btn-container {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: 100;
+    }
+
+    .btn-print {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 28px;
+      background: linear-gradient(135deg, #00f0ff 0%, #a855f7 100%);
+      color: white;
+      border: none;
+      border-radius: 35px;
+      font-family: 'Sarabun', sans-serif;
+      font-weight: 800;
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: 0 5px 25px rgba(0, 240, 255, 0.5);
+      transition: all 0.3s ease;
+    }
+
+    .btn-print:hover {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 8px 30px rgba(0, 240, 255, 0.7);
+    }
+
+    .cover {
+      text-align: center;
+      margin-bottom: 4rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 3rem;
+    }
+
+    .badge-exercise {
+      background: linear-gradient(135deg, #00f0ff, #a855f7);
+      color: #0c0e1a;
+      font-weight: 800;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      display: inline-block;
+      margin-bottom: 1rem;
+    }
+
+    h1 {
+      font-family: 'Outfit', 'Sarabun', sans-serif;
+      font-size: 2.6rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #ffffff 30%, #c7d2fe 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin: 0 0 1rem 0;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 1.2rem;
+    }
+
+    h2 {
+      font-family: 'Outfit', 'Sarabun', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 800;
+      border-left: 5px solid var(--secondary);
+      padding-left: 1rem;
+      margin-top: 3.5rem;
+      margin-bottom: 1.5rem;
+      color: var(--secondary);
+    }
+
+    h3 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      font-size: 1.05rem;
+      color: #cbd5e1;
+      margin-bottom: 1.5rem;
+    }
+
+    .box-hint {
+      background: rgba(234, 179, 8, 0.05);
+      border: 1px solid rgba(234, 179, 8, 0.2);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      position: relative;
+    }
+
+    .box-hint::before {
+      content: "💡 คำใบ้และแนวทางคิด";
+      position: absolute;
+      top: -12px;
+      left: 20px;
+      background: var(--warning);
+      color: #0c0e1a;
+      font-size: 0.8rem;
+      font-weight: 800;
+      padding: 2px 12px;
+      border-radius: 20px;
+    }
+
+    .box-hint p {
+      margin: 0;
+      color: #fef08a;
+    }
+
+    .box-solution {
+      background: rgba(16, 185, 129, 0.05);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin: 2rem 0;
+      position: relative;
+    }
+
+    .box-solution::before {
+      content: "✅ เฉลยคำตอบและคำอธิบาย";
+      position: absolute;
+      top: -12px;
+      left: 20px;
+      background: var(--success);
+      color: #0c0e1a;
+      font-size: 0.8rem;
+      font-weight: 800;
+      padding: 2px 12px;
+      border-radius: 20px;
+    }
+
+    .box-solution p {
+      margin-bottom: 1rem;
+      color: #a7f3d0;
+    }
+
+    code {
+      font-family: 'Consolas', monospace;
+      background: var(--code-bg);
+      padding: 3px 7px;
+      border-radius: 6px;
+      color: #ff7597;
+      font-size: 0.95em;
+    }
+
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      margin: 1.5rem 0;
+    }
+
+    pre code {
+      background: none;
+      padding: 0;
+      color: #38bdf8;
+      font-size: 0.92rem;
+      border: none;
+    }
+
+    @media print {
+      body {
+        background-color: white !important;
+        color: black !important;
+        font-size: 11pt !important;
+      }
+      
+      .container {
+        max-width: 100% !important;
+        padding: 0 !important;
+      }
+
+      .print-btn-container {
+        display: none !important;
+      }
+
+      .cover {
+        border-bottom: 2px solid #333 !important;
+        margin-bottom: 2rem !important;
+        padding-bottom: 1.5rem !important;
+      }
+
+      h1 {
+        background: none !important;
+        -webkit-text-fill-color: black !important;
+        color: black !important;
+        font-size: 26pt !important;
+      }
+
+      h2 {
+        color: #000 !important;
+        border-left: 5px solid #000 !important;
+        page-break-after: avoid;
+      }
+
+      h3 {
+        color: #111 !important;
+        page-break-after: avoid;
+      }
+
+      p, li {
+        color: #111 !important;
+      }
+
+      code {
+        background: #f1f5f9 !important;
+        color: #0f172a !important;
+        border: 1px solid #cbd5e1 !important;
+      }
+
+      pre {
+        background: #f8fafc !important;
+        border: 1px solid #cbd5e1 !important;
+        page-break-inside: avoid;
+      }
+
+      pre code {
+        color: #0f172a !important;
+      }
+
+      .box-hint {
+        background: #fffbeb !important;
+        border: 1px dashed #d97706 !important;
+        color: #78350f !important;
+        page-break-inside: avoid;
+      }
+
+      .box-hint p {
+        color: #78350f !important;
+      }
+
+      .box-solution {
+        background: #f0fdf4 !important;
+        border: 1px dashed #16a34a !important;
+        color: #14532d !important;
+        page-break-inside: avoid;
+      }
+
+      .box-solution p {
+        color: #14532d !important;
+      }
+
+      @page {
+        size: A4;
+        margin: 20mm;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="print-btn-container">
+    <button class="btn-print" onclick="window.print()">
+      🖨️ พิมพ์คู่มือแบบฝึกหัด PDF
+    </button>
+  </div>
+
+  <div class="container">
+    
+    <div class="cover">
+      <span class="badge-exercise">Hands-On Practice</span>
+      <h1>คู่มือแบบฝึกหัดขยายฟีเจอร์แอปพลิเคชัน</h1>
+      <p class="subtitle">ทดลองเพิ่มความสามารถจริงให้กับระบบ Smart Home Inventory ทั้งฝั่ง Go API และ Angular Signals ด้วยตัวเอง</p>
+    </div>
+
+    <p>
+      การอ่านเรียนรู้ทฤษฎีจะมีประสิทธิภาพสูงสุดเมื่อคุณได้ลงมือ **"พิมพ์เขียนโค้ดแก้ปัญหาจริง"** 
+      ด้านล่างนี้คือ 3 โจทย์ท้าทายการพัฒนาที่จะพาคุณลงลึกไปแก้ไขขยายระบบปัจจุบันที่คุณพึ่งร่วมกันสร้างขึ้นมาครับ!
+    </p>
+
+    <!-- EXERCISE 1 -->
+    <h2>🛠️ Exercise 1 (Go API): เพิ่มระบบลบของใช้ออกจากหลังบ้าน</h2>
+    <p>
+      <strong>เป้าหมาย:</strong> พัฒนาพอร์ต REST API ฝั่งหลังบ้านด้วย Go ให้รองรับคำขอแบบ <code>DELETE /api/items/:id</code> 
+      เพื่อรองรับเวลาที่เราจัดของหมดแล้วอยากคัดลบสินค้าชิ้นนั้นทิ้งออกจากคลังจริง ๆ
+    </p>
+
+    <h3>📝 โจทย์ย่อย:</h3>
+    <ol>
+      <li>สร้าง HTTP Route ใหม่ใน <code>cmd/server/main.go</code> ผูกกับคำขอ <code>DELETE</code></li>
+      <li>เขียนฟังก์ชันใน Handler <code>item_handler.go</code> คอยรับ Parameter ID ทาง URL พารามิเตอร์ และส่งต่อคำสั่งไปลบ</li>
+    </ol>
+
+    <div class="box-hint">
+      <p>
+        ใช้คำสั่ง <code>c.Param("id")</code> เพื่อแกะรหัส ID ของสินค้าออกมาจาก URL 
+        และเรียกใช้ method <code>useCase.Delete(id)</code> (ที่มีระบบ Lock Mutex ห้ามคนเขียนทับซ้อนซ่อนอยู่) 
+        จากนั้นส่งสถานะความสำเร็จ <code>http.StatusOK</code> หรือ 200 กลับไปให้หน้าบ้านรับทราบ
+      </p>
+    </div>
+
+    <div class="box-solution">
+      <p><strong>ขั้นตอนที่ 1.1:</strong> เขียนฟังก์ชัน Handler สแกนดักรับในไฟล์ <code>internal/handlers/item_handler.go</code>:</p>
+      <pre><code>// Delete handles DELETE /api/items/:id
+func (h *ItemHandler) Delete(c *gin.Context) {
+	id := c.Param("id") // 👈 ดึงค่า "item_x" ออกมาจากพาร์ท URL
+	
+	// ส่งไปลบข้อมูลจริงใน UseCase
+	// บังคับแปลง interface delete ใน Repository ให้ลบข้อมูลคีย์แม็ปทิ้ง
+	err := h.useCase.Delete(id) 
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete: " + err.Error()})
+		return
+	}
+	
+	// ส่งกลับยืนยันสำเร็จ 200 OK
+	c.JSON(http.StatusOK, gin.H{"message": "Item deleted successfully"})
+}</code></pre>
+
+      <p><strong>ขั้นตอนที่ 1.2:</strong> ไปผูกทะเบียนเปิดเส้นทางที่ไฟล์ <code>cmd/server/main.go</code>:</p>
+      <pre><code>// ค้นหากลุ่ม api.Group("/api") แล้วเพิ่มบรรทัดนี้ลงไป:
+api.DELETE("/items/:id", itemHandler.Delete) // 👈 ดักฟังคำขอแบบ DELETE</code></pre>
+    </div>
+
+    <!-- EXERCISE 2 -->
+    <h2>🛠️ Exercise 2 (Angular Signals): ระบบปุ่มสลับกรองด่วนแสดงเฉพาะไฟแดง</h2>
+    <p>
+      <strong>เป้าหมาย:</strong> เพิ่มปุ่ม Toggle สวิตช์เปิด-ปิดด่วนบนหน้าจอเว็บ 
+      ที่เมื่อกดเปิดปุ่มแล้ว แดชบอร์ดจะกรองซ่อนของกินอื่น ๆ ทั้งหมดทิ้ง และดึงมาเฉพาะการ์ดสีส้ม/สีแดงที่ใกล้หมดสต๊อกขึ้นมาแสดงผลเท่านั้น!
+    </p>
+
+    <h3>📝 โจทย์ย่อย:</h3>
+    <ol>
+      <li>สร้างสวิตช์ตัวเฝ้าสัญญาณใหม่ชื่อ <code>showOnlyLowStock = signal&lt;boolean&gt;(false)</code></li>
+      <li>แก้ไขสูตรคำนวณอัตโนมัติ <code>filteredItems = computed(() => { ... })</code> ให้ประเมินค่าตัวสวิตช์ร่วมด้วย</li>
+    </ol>
+
+    <div class="box-hint">
+      <p>
+        ภายในวงเล็บปีกกาของ <code>computed()</code> ใน TypeScript เมื่อคุณเรียกใช้ <code>this.showOnlyLowStock()</code> 
+        ตัวแปลงสูตรจะผูกสายรับวิทยุเข้ามา หากค่านำเข้าเป็น true ให้สั่งกรองอาร์เรย์กรองเอาเฉพาะสินค้าที่ค่านั้นเข้าข่ายสต๊อกต่ำกว่า 20%
+      </p>
+    </div>
+
+    <div class="box-solution">
+      <p><strong>ขั้นตอนที่ 2.1:</strong> ปรับปรุงโค้ดฟิลเตอร์ที่ไฟล์ตรรกะแดชบอร์ด <code>src/app/features/dashboard/dashboard.ts</code>:</p>
+      <pre><code>// 1. ประกาศตัวแปรสัญญาณ Toggle เฝ้าค่าบูลีน
+showOnlyLowStock = signal&lt;boolean&gt;(false);
+
+// 2. ปรับตรรกะใน computed ของ filteredItems
+filteredItems = computed(() => {
+  let items = this.inventoryService.items();
+  const query = this.searchQuery().toLowerCase().trim();
+  const category = this.selectedCategory();
+  const onlyLow = this.showOnlyLowStock(); // 👈 ดึงค่าวิทยุตลอดเวลา
+
+  // กรองตามคำค้นหา
+  if (query) {
+    items = items.filter((item) => item.name.toLowerCase().includes(query));
+  }
+
+  // กรองตามหมวดหมู่
+  if (category) {
+    items = items.filter((item) => item.category === category);
+  }
+
+  // ⭐️ กรองตามสวิตช์ไฟแดงเตือน
+  if (onlyLow) {
+    items = items.filter((item) => (item.currentStock / item.baseQuantity) <= 0.20);
+  }
+
+  return items;
+});
+
+// ฟังก์ชันสำหรับสั่งเปิดปิดสวิตช์สลับไปมา
+toggleLowStockFilter() {
+  this.showOnlyLowStock.set(!this.showOnlyLowStock()); // 👈 สลับค่า true &lt;-&gt; false
+}</code></pre>
+
+      <p><strong>ขั้นตอนที่ 2.2:</strong> แปะปุ่มกดสวิตช์สวย ๆ เรืองแสงลงบน HTML <code>src/app/features/dashboard/dashboard.html</code>:</p>
+      <pre><code>&lt;!-- เพิ่มลงไปถัดจากปุ่มเพิ่มสินค้า หรือบริเวณกล่องค้นหาข้อมูล --&gt;
+&lt;button 
+  class="cat-tag" 
+  [class.active]="showOnlyLowStock()" 
+  (click)="toggleLowStockFilter()"&gt;
+  🚨 แสดงเฉพาะของใกล้หมด ({{ inventoryService.lowStockCount() }})
+&lt;/button&gt;</code></pre>
+    </div>
+
+    <!-- EXERCISE 3 -->
+    <h2>🛠️ Exercise 3 (Full-Stack): ปุ่มคลิกลบการ์ดของใช้ออกหน้าเว็บทันที</h2>
+    <p>
+      <strong>เป้าหมาย:</strong> การต่อท่อเชื่อมแบบ full-stack! เพิ่มปุ่มไอคอนถังขยะสีแดงลงบนการ์ดสินค้าทุกใบในแดชบอร์ด 
+      เมื่อคลิกจะยิง AJAX <code>DELETE</code> ไปหลังบ้าน Go เพื่อเคลียร์ฐานข้อมูลจำลอง 
+      จากนั้น Signal Store จะทำการคัดชื่อตัวแปร ID นั้นทิ้ง เพื่อลบการ์ดออกจากจอในบัดดล!
+    </p>
+
+    <h3>📝 โจทย์ย่อย:</h3>
+    <ol>
+      <li>เพิ่มพอร์ตเรียกใช้ลบข้อมูลใน <code>core/http/api.ts</code></li>
+      <li>สร้างแอคชันรับฟันฟลักซ์ใน Signal <code>core/services/inventory.service.ts</code></li>
+      <li>เพิ่มปุ่มกดลงบน HTML การ์ดทุกใบ</li>
+    </ol>
+
+    <div class="box-solution">
+      <p><strong>ขั้นตอนที่ 3.1:</strong> เขียนตัวยิง DELETE ในฝั่ง Client `src/app/core/http/api.ts`:</p>
+      <pre><code>// ยิงคำขอลบสินค้า
+deleteItem(id: string): Observable&lt;any&gt; {
+  return this.http.delete(`${this.baseUrl}/items/${id}`);
+}</code></pre>
+
+      <p><strong>ขั้นตอนที่ 3.2:</strong> เพิ่มแอคชันทำลายข้อมูลใน Signal Store `src/app/core/services/inventory.service.ts`:</p>
+      <pre><code>// Action สำหรับลบสินค้าและนำออกจากการจำลอง State
+removeItem(id: string) {
+  this.api.deleteItem(id).subscribe({
+    next: () => {
+      // ดึงอาร์เรย์เดิมและกรองลบคัดตัวที่มี ID ตรงทิ้งไป
+      const updated = this._items().filter(item => item.id !== id);
+      this._items.set(updated); // 👈 อัปเดต Signal ทันที!
+    },
+    error: (err) => {
+      console.error("ลบข้อมูลไม่สำเร็จ", err);
+      this._error.set("ไม่สามารถลบสินค้าชิ้นนี้ได้");
+    }
+  });
+}</code></pre>
+
+      <p><strong>ขั้นตอนที่ 3.3:</strong> สร้างฟังก์ชันคำสั่งดักคลิกปุ่มบนคอนโทรลเลอร์ `src/app/features/dashboard/dashboard.ts`:</p>
+      <pre><code>// ฟังก์ชันคลิกลบสินค้า
+deleteItem(id: string) {
+  if (confirm("คุณแน่ใจหรือไม่ที่จะลบของใช้ชิ้นนี้ออกจากคลังบ้าน?")) {
+    this.inventoryService.removeItem(id);
+  }
+}</code></pre>
+
+      <p><strong>ขั้นตอนที่ 3.4:</strong> แปะปุ่มกดไอคอนถังขยะลงบนมุมขวาการ์ดสินค้าใน `src/app/features/dashboard/dashboard.html`:</p>
+      <pre><code>&lt;!-- แปะลงในส่วนหัวการ์ด &lt;div class="item-card-header"&gt; --&gt;
+&lt;div class="item-card-header"&gt;
+  &lt;span class="item-badge"&gt;{{ item.category }}&lt;/span&gt;
+  
+  &lt;!-- ปุ่มถังขยะสีแดงขอบใสเรืองแสง --&gt;
+  &lt;button 
+    style="background: none; border: none; color: var(--danger); cursor: pointer; font-size: 1.1rem; padding: 4px;"
+    (click)="deleteItem(item.id)" 
+    title="ลบออกจากบ้าน"&gt;
+    🗑️
+  &lt;/button&gt;
+&lt;/div&gt;</code></pre>
+    </div>
+
+    <h2>🏁 ขั้นตอนถัดไปหลังทำแบบฝึกหัดเสร็จ</h2>
+    <p>
+      เมื่อคุณลองแก้ไขและนำโค้ดในแบบฝึกหัดเหล้านี้ไปประยุกต์ทับในระบบของคุณแล้ว 
+      ลองทดสอบเปิดดูหน้าจอเบราว์เซอร์ [http://localhost:4200/](http://localhost:4200/) 
+      คุณจะได้พบระบบกรองด่วนสวิตช์เตือนวิกฤต และปุ่มถังขยะลบการ์ดกระเพื่อมลื่นไหลอย่างสวยงามด้วยพลังฝีมือเขียนโค้ดขยายระบบของคุณเองจริง ๆ ครับ! 🚀
+    </p>
+
+  </div>
+
+</body>
+</html>

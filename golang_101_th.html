@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Go Lang 101: คู่มือปูพื้นฐานภาษา Go สำหรับผู้เริ่มต้นจากศูนย์</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-color: #0b0c16;
+      --card-bg: rgba(19, 21, 46, 0.7);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --primary: #00f0ff;
+      --secondary: #8a2be2;
+      --text-color: #e2e8f0;
+      --text-muted: #94a3b8;
+      --code-bg: rgba(5, 6, 15, 0.85);
+      --danger: #ff4b72;
+      --warning: #ffb119;
+      --success: #05d68d;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-family: 'Sarabun', sans-serif;
+      line-height: 1.7;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+    }
+
+    .print-btn-container {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: 100;
+    }
+
+    .btn-print {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 28px;
+      background: linear-gradient(135deg, #00f0ff 0%, #8a2be2 100%);
+      color: white;
+      border: none;
+      border-radius: 35px;
+      font-family: 'Sarabun', sans-serif;
+      font-weight: 800;
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: 0 5px 25px rgba(0, 240, 255, 0.5);
+      transition: all 0.3s ease;
+    }
+
+    .btn-print:hover {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 8px 30px rgba(0, 240, 255, 0.7);
+    }
+
+    .cover {
+      text-align: center;
+      margin-bottom: 4rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 3rem;
+    }
+
+    .badge-101 {
+      background: linear-gradient(135deg, #00f0ff, #8a2be2);
+      color: #0b0c16;
+      font-weight: 800;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      display: inline-block;
+      margin-bottom: 1rem;
+    }
+
+    h1 {
+      font-family: 'Outfit', 'Sarabun', sans-serif;
+      font-size: 2.8rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #ffffff 30%, #c7d2fe 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin: 0 0 1rem 0;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 1.2rem;
+    }
+
+    h2 {
+      font-family: 'Outfit', 'Sarabun', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 800;
+      border-left: 5px solid var(--primary);
+      padding-left: 1rem;
+      margin-top: 3.5rem;
+      margin-bottom: 1.5rem;
+      color: var(--primary);
+    }
+
+    h3 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      font-size: 1.05rem;
+      color: #cbd5e1;
+      margin-bottom: 1.5rem;
+    }
+
+    .analogy-box {
+      background: rgba(5, 214, 141, 0.06);
+      border: 1px solid rgba(5, 214, 141, 0.2);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin: 2rem 0;
+      position: relative;
+    }
+
+    .analogy-box::before {
+      content: "💡 เปรียบเทียบกับชีวิตจริง";
+      position: absolute;
+      top: -12px;
+      left: 20px;
+      background: var(--success);
+      color: #0b0c16;
+      font-size: 0.8rem;
+      font-weight: 800;
+      padding: 2px 12px;
+      border-radius: 20px;
+    }
+
+    .analogy-box p {
+      margin: 0;
+      color: #a7f3d0;
+    }
+
+    code {
+      font-family: 'Consolas', monospace;
+      background: var(--code-bg);
+      padding: 3px 7px;
+      border-radius: 6px;
+      color: #ff7597;
+      font-size: 0.95em;
+    }
+
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      margin: 1.5rem 0;
+    }
+
+    pre code {
+      background: none;
+      padding: 0;
+      color: #38bdf8;
+      font-size: 0.92rem;
+      border: none;
+    }
+
+    @media print {
+      body {
+        background-color: white !important;
+        color: black !important;
+        font-size: 11pt !important;
+      }
+      
+      .container {
+        max-width: 100% !important;
+        padding: 0 !important;
+      }
+
+      .print-btn-container {
+        display: none !important;
+      }
+
+      .cover {
+        border-bottom: 2px solid #333 !important;
+        margin-bottom: 2rem !important;
+        padding-bottom: 1.5rem !important;
+      }
+
+      h1 {
+        background: none !important;
+        -webkit-text-fill-color: black !important;
+        color: black !important;
+        font-size: 26pt !important;
+      }
+
+      h2 {
+        color: #000 !important;
+        border-left: 5px solid #000 !important;
+        page-break-after: avoid;
+      }
+
+      h3 {
+        color: #111 !important;
+        page-break-after: avoid;
+      }
+
+      p, li {
+        color: #111 !important;
+      }
+
+      code {
+        background: #f1f5f9 !important;
+        color: #0f172a !important;
+        border: 1px solid #cbd5e1 !important;
+      }
+
+      pre {
+        background: #f8fafc !important;
+        border: 1px solid #cbd5e1 !important;
+        page-break-inside: avoid;
+      }
+
+      pre code {
+        color: #0f172a !important;
+      }
+
+      .analogy-box {
+        background: #f0fdf4 !important;
+        border: 1px dashed #16a34a !important;
+        color: #14532d !important;
+        page-break-inside: avoid;
+      }
+
+      .analogy-box p {
+        color: #14532d !important;
+      }
+
+      @page {
+        size: A4;
+        margin: 20mm;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="print-btn-container">
+    <button class="btn-print" onclick="window.print()">
+      🖨️ พิมพ์คู่มือ Go 101 PDF
+    </button>
+  </div>
+
+  <div class="container">
+    
+    <div class="cover">
+      <span class="badge-101">Go Lang 101 Reference</span>
+      <h1>Go Lang 101: คู่มือปูพื้นฐานฉบับผู้เริ่มต้นจากศูนย์</h1>
+      <p class="subtitle">เรียนรู้หลักไวยากรณ์ การประกาศตัวแปร โครงสร้างข้อมูล และระบบการรันขนานกันของภาษา Go</p>
+    </div>
+
+    <h2>📌 1. ปรัชญาของภาษา Go: ทำไมคนถึงนิยมใช้?</h2>
+    <p>
+      ภาษา Go ถูกสร้างขึ้นโดยทีมวิศวกรของ Google (รวมถึงคุณ Rob Pike และ Ken Thompson ผู้สร้างระบบปฏิบัติการ Unix) 
+      โดยมุ่งเน้นปรัชญาสำคัญคือ <strong>"ความง่าย สั้นกระชับ และเสถียรสุดยอด"</strong> Go แตกต่างจากภาษาทั่วไปคือ:
+    </p>
+    <ul>
+      <li><strong>มีคีย์เวิร์ดควบคุมการทำงานเพียง 25 คำ:</strong> ทำให้เขียนโค้ดได้กระชับ เรียนรู้ง่ายมาก เรียนแค่วันเดียวก็เขียนได้!</li>
+      <li><strong>แปลงเป็นไฟล์รันตรงไม่ต้องใช้โปรแกรมครอบ (Compiled Language):</strong> Go แปลงซอร์สโค้ดของคุณตรงเข้าสู่ Machine Code (ไฟล์ .exe หรือไบนารี) ทำให้มันเปิดตัวได้เร็วเฉียบเสี้ยววินาทีและกินแรมน้อยมาก</li>
+    </ul>
+
+    <h2>📌 2. การประกาศตัวแปรและการจัดการประเภทข้อมูล</h2>
+    <p>
+      ในภาษา Go เราต้องประกาศชนิดข้อมูล (Type) ให้ตัวแปรอย่างชัดเจน มี 2 วิธีหลักในการประกาศตัวแปร:
+    </p>
+
+    <h3>วิธีที่ 1: ใช้คีย์เวิร์ดมาตรฐาน <code>var</code> (กำหนดค่าเริ่มต้นได้)</h3>
+    <pre><code>var name string = "น้ำยาซักผ้า"
+var currentStock float64 = 4.5
+var isActive bool = true</code></pre>
+
+    <h3>วิธีที่ 2: ใช้เครื่องหมายลัดสุดฮิต <code>:=</code> (Short Variable Declaration)</h3>
+    <p>
+      วิธีนี้ใช้สัญลักษณ์ <code>:=</code> ในการจับคู่ข้อมูล โดยตัวภาษา Go จะแอบมองค่าขวาแล้ววิเคราะห์แอบเลือก Type ให้เราเองอัตโนมัติ (เขียนได้เฉพาะในฟังก์ชันเท่านั้น):
+    </p>
+    <pre><code>name := "นมสดพาสเจอร์ไรส์" // Go จะประเมินว่าเป็นประเภท string
+currentStock := 10.0      // Go จะประเมินว่าเป็นประเภท float64
+isActive := false         // Go จะประเมินว่าเป็นประเภท bool</code></pre>
+
+    <h2>📌 3. การควบคุมทิศทางโปรแกรม (If-Else & For Loops)</h2>
+    
+    <h3>1. การเปรียบเทียบตรรกะแบบไม่ต้องมีวงเล็บ (If-Else)</h3>
+    <p>
+      ภาษา Go สั่งห้ามใส่วงเล็บรอบการตรวจจับตัวแปร ซึ่งทำให้โค้ดมีความคลีนสะอาดตามาก:
+    </p>
+    <pre><code>if currentStock <= 0 {
+    fmt.Println("วิกฤต! ของหมดแล้ว")
+} else if currentStock / baseQuantity <= 0.2 {
+    fmt.Println("คำเตือน: ของใกล้หมดคลัง")
+} else {
+    fmt.Println("ปกติ: ปริมาณยังพอใช้")
+}</code></pre>
+
+    <h3>2. การทำซ้ำแบบไม่มีวันสิ้นสุด (For Loop)</h3>
+    <p>
+      Go เป็นภาษาที่ฉลาดมากและเลือกตัดคำสั่งยุ่งเหยิงออก <strong>ในภาษา Go จะไม่มีคำสั่ง loop ชนิด <code>while</code> หรือ <code>do-while</code></strong> 
+      แต่ใช้เพียงคำสั่ง <code>for</code> แบบเดียวเพื่อแทนทุกอย่าง!
+    </p>
+    <pre><code>// 1. Loop ทั่วไปแบบนับจำนวน (Loop แบบดั้งเดิม)
+for i := 0; i < 5; i++ {
+    fmt.Println("รอบที่:", i)
+}
+
+// 2. Loop คอยตรวจจับสถานะ (ทำหน้าที่เหมือน while loop ในภาษาอื่น)
+for isActive {
+    // ทำงานไปเรื่อย ๆ ตราบใดที่ isActive ยังคงเป็น true
+}
+
+// 3. Loop ทะลวงกลุ่มข้อมูล (Range Loop ดึงดัชนีและค่าออกมาใช้งาน)
+items := []string{"นม", "สบู่", "ข้าวสาร"}
+for index, item := range items {
+    fmt.Printf("ตำแหน่งที่ %d คือของสิ่งนี้: %s\n", index, item)
+}</code></pre>
+
+    <h2>📌 4. โครงสร้างข้อมูลขั้นสูง: Struct & Method</h2>
+    <p>
+      เมื่อต้องการเอาตัวแปรหลาย ๆ ชิ้นมารวมร่างกันเพื่อจัดระเบียบข้อมูลเป็นกล่อง ๆ เราจะใช้ <code>struct</code> 
+      และหากต้องการเขียนฟังก์ชันให้ไปติดอยู่บนตัว Struct นั้น (เหมือนคลาสใน OOP) เราจะเรียกว่า <strong>Method</strong>:
+    </p>
+    <pre><code>package main
+
+import "fmt"
+
+// 1. ประกาศโครงสร้าง Struct แปะป้ายคุณสมบัติ
+type Bottle struct {
+	Name         string
+	CurrentVolume float64
+}
+
+// 2. เขียน Method ผูกติดก้นขวด (การรับค่าแบบ pointer)
+// สังเกตตัวแปรผูกหน้า (b *Bottle) เรียกว่า Receiver
+func (b *Bottle) Use(amount float64) {
+	b.CurrentVolume -= amount
+	if b.CurrentVolume < 0 {
+		b.CurrentVolume = 0
+	}
+	fmt.Printf("ใช้ %s ไปปริมาณ %.1f\n", b.Name, amount)
+}
+
+func main() {
+	myMilk := Bottle{Name: "นมพาสเจอร์ไรส์ Meiji", CurrentVolume: 1000}
+	
+	// เรียกใช้ Method บน struct
+	myMilk.Use(250)
+	
+	fmt.Printf("ปริมาณนมคงเหลือ: %.1f ml\n", myMilk.CurrentVolume) // ได้ผลลัพธ์ 750.0
+}</code></pre>
+
+    <h2>📌 5. ปลดล็อคความกลัว: Pointer คืออะไร? (พอยน์เตอร์แบบเข้าใจง่ายสุด ๆ)</h2>
+    <p>
+      หลายคนกลัวคำว่า <strong>Pointer (พอยน์เตอร์)</strong> แต่ใน Go มันง่ายมาก! 
+      ลองนึกภาพ: ตัวแปรปกติเหมือน <strong>"กระดาษถ่ายเอกสาร"</strong> และ Pointer เหมือน <strong>"ป้ายชี้ตำแหน่งพิกัดบ้าน"</strong>:
+    </p>
+    <div class="analogy-box">
+      <p>
+        <strong>เปรียบเทียบในชีวิตจริง:</strong><br>
+        สมมติว่าคุณมีบ้านเลขที่หนึ่งตัว (ค่าตัวแปรในหน่วยความจำ RAM)<br>
+        - หากส่งตัวแปรปกติไปที่อื่น: เหมือนคุณถ่ายเอกสารรูปภาพบ้านไปให้คนอื่นวาดต่อ เขาระบายสีเล่นบนกระดาษใบนั้น บ้านจริง ๆ ของคุณจะไม่เปลี่ยนสี!<br>
+        - หากใช้ Pointer (ส่งบ้านเลขที่ชี้ทางไป): เหมือนคุณยื่นแผนที่ให้เขาเดินมาที่หน้าบ้านจริง ๆ ของคุณแล้วลุยพ่นสเปรย์ระบายสีบ้านคุณ เมื่อเขากลับไป บ้านจริง ๆ ของคุณจะเปลี่ยนสีไปถาวร!
+      </p>
+    </div>
+    
+    <p>ไวยากรณ์สัญลักษณ์หลักใน Go มีเพียง 2 ตัว:</p>
+    <ul>
+      <li>เครื่องหมาย <code>&</code> (แอมเพอร์แซนด์): ย่อมาจาก <strong>"หาพิกัดบ้านเลขที่ของตัวแปรนี้มาซิ"</strong> (Address-of operator)</li>
+      <li>เครื่องหมาย <code>*</code> (แอสเทอริสค์): ย่อมาจาก <strong>"เดินตามพิกัดแผนที่ไปทะลวงเปิดห้องกล่องข้อมูลข้างใน"</strong> (Dereference operator)</li>
+    </ul>
+
+    <pre><code>func main() {
+    milkStock := 10.0 // ตัวแปรเก็บจำนวนนมสด
+    
+    // 1. หาแผนที่บ้านของตัวแปรนี้โดยใส่ & ด้านหน้า
+    pointerToStock := &milkStock 
+    
+    fmt.Println(pointerToStock)  // พ่นที่อยู่บ้านเลขที่ในแร็มออกมา เช่น 0xc0000120b8
+    
+    // 2. ถ้าใส่ * ข้างหน้า ตัวชี้ทางจะไปเปลี่ยนค่าที่อยู่ของบ้านหลังจริงถาวร!
+    *pointerToStock = 5.0 
+    
+    fmt.Println(milkStock) // ได้ผลลัพธ์ 5.0 (เปลี่ยนค่าตัวแปรจริงถาวร!)
+}</code></pre>
+
+    <h2>📌 6. ระบบวิ่งขนานของ Go: Goroutine & sync.RWMutex</h2>
+    <p>
+      เมื่อรันเว็บเซิร์ฟเวอร์ ภาษา Go จะรันคิวประมวลผลของผู้ใช้งานขนานกันด้วยสิ่งเล็ก ๆ ที่เรียกว่า <strong>Goroutine</strong> 
+      ซึ่งเป็นเทรดขนาดเล็กมากที่กินทรัพยากรน้อยกว่าเทรดทั่วไปถึง 1,000 เท่า!
+    </p>
+    <p>
+      และเมื่อเรามีการเขียนอ่านข้อมูลขนานกัน เพื่อป้องกันความโกลาหล เราใช้ <code>sync.RWMutex</code> ในการควบคุม:
+    </p>
+    <pre><code>type SafeInventory struct {
+    mu   sync.RWMutex // 👈 ค้ำควบคุมความปลอดภัย
+    data map[string]float64
+}
+
+// ทุกครั้งที่จะบันทึกแก้ไขสต๊อก ให้เปิดใช้ Lock สิทธิ์ขาดคนเดียว!
+func (s *SafeInventory) Write(key string, val float64) {
+    s.mu.Lock()
+    defer s.mu.Unlock() // ปลดล็อคกุญแจทันทีเมื่อแก้ไขสต๊อกเสร็จสิ้น
+    s.data[key] = val
+}</code></pre>
+
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Angular 101: คู่มือปูพื้นฐาน Angular สำหรับผู้เริ่มต้นจากศูนย์ (Modern Signals)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-color: #0b0c16;
+      --card-bg: rgba(19, 21, 46, 0.7);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --primary: #e03a72;
+      --secondary: #8a2be2;
+      --cyan: #00f0ff;
+      --text-color: #e2e8f0;
+      --text-muted: #94a3b8;
+      --code-bg: rgba(5, 6, 15, 0.85);
+      --danger: #ff4b72;
+      --warning: #ffb119;
+      --success: #05d68d;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-family: 'Sarabun', sans-serif;
+      line-height: 1.7;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+    }
+
+    .print-btn-container {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: 100;
+    }
+
+    .btn-print {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 28px;
+      background: linear-gradient(135deg, #e03a72 0%, #8a2be2 100%);
+      color: white;
+      border: none;
+      border-radius: 35px;
+      font-family: 'Sarabun', sans-serif;
+      font-weight: 800;
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: 0 5px 25px rgba(224, 58, 114, 0.5);
+      transition: all 0.3s ease;
+    }
+
+    .btn-print:hover {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 8px 30px rgba(224, 58, 114, 0.7);
+    }
+
+    .cover {
+      text-align: center;
+      margin-bottom: 4rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 3rem;
+    }
+
+    .badge-101 {
+      background: linear-gradient(135deg, #e03a72, #8a2be2);
+      color: white;
+      font-weight: 800;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      display: inline-block;
+      margin-bottom: 1rem;
+    }
+
+    h1 {
+      font-family: 'Outfit', 'Sarabun', sans-serif;
+      font-size: 2.8rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #ffffff 30%, #c7d2fe 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin: 0 0 1rem 0;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 1.2rem;
+    }
+
+    h2 {
+      font-family: 'Outfit', 'Sarabun', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 800;
+      border-left: 5px solid var(--primary);
+      padding-left: 1rem;
+      margin-top: 3.5rem;
+      margin-bottom: 1.5rem;
+      color: var(--primary);
+    }
+
+    h3 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      font-size: 1.05rem;
+      color: #cbd5e1;
+      margin-bottom: 1.5rem;
+    }
+
+    .analogy-box {
+      background: rgba(0, 240, 255, 0.04);
+      border: 1px solid rgba(0, 240, 255, 0.15);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin: 2rem 0;
+      position: relative;
+    }
+
+    .analogy-box::before {
+      content: "💡 เปรียบเทียบกับชีวิตจริง";
+      position: absolute;
+      top: -12px;
+      left: 20px;
+      background: var(--cyan);
+      color: #0b0c16;
+      font-size: 0.8rem;
+      font-weight: 800;
+      padding: 2px 12px;
+      border-radius: 20px;
+    }
+
+    .analogy-box p {
+      margin: 0;
+      color: #a5f3fc;
+    }
+
+    .note-alert {
+      background: rgba(255, 75, 114, 0.08);
+      border-left: 4px solid var(--danger);
+      border-radius: 0 16px 16px 0;
+      padding: 1.2rem 1.8rem;
+      margin: 2rem 0;
+    }
+
+    .note-alert h4 {
+      margin: 0 0 6px 0;
+      color: var(--danger);
+      font-weight: 800;
+      font-size: 1.1rem;
+    }
+
+    .note-alert p {
+      margin: 0;
+      color: #fecdd3;
+    }
+
+    ul, ol {
+      padding-left: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    li {
+      margin-bottom: 0.6rem;
+      color: #cbd5e1;
+      font-size: 1.02rem;
+    }
+
+    code {
+      font-family: 'Consolas', monospace;
+      background: var(--code-bg);
+      padding: 3px 7px;
+      border-radius: 6px;
+      color: #ff7597;
+      font-size: 0.95em;
+    }
+
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      margin: 1.5rem 0;
+    }
+
+    pre code {
+      background: none;
+      padding: 0;
+      color: #38bdf8;
+      font-size: 0.92rem;
+      border: none;
+    }
+
+    @media print {
+      body {
+        background-color: white !important;
+        color: black !important;
+        font-size: 11pt !important;
+      }
+      
+      .container {
+        max-width: 100% !important;
+        padding: 0 !important;
+      }
+
+      .print-btn-container {
+        display: none !important;
+      }
+
+      .cover {
+        border-bottom: 2px solid #333 !important;
+        margin-bottom: 2rem !important;
+        padding-bottom: 1.5rem !important;
+      }
+
+      h1 {
+        background: none !important;
+        -webkit-text-fill-color: black !important;
+        color: black !important;
+        font-size: 26pt !important;
+      }
+
+      h2 {
+        color: #000 !important;
+        border-left: 5px solid #000 !important;
+        page-break-after: avoid;
+      }
+
+      h3 {
+        color: #111 !important;
+        page-break-after: avoid;
+      }
+
+      p, li {
+        color: #111 !important;
+      }
+
+      code {
+        background: #f1f5f9 !important;
+        color: #0f172a !important;
+        border: 1px solid #cbd5e1 !important;
+      }
+
+      pre {
+        background: #f8fafc !important;
+        border: 1px solid #cbd5e1 !important;
+        page-break-inside: avoid;
+      }
+
+      pre code {
+        color: #0f172a !important;
+      }
+
+      .analogy-box {
+        background: #f0fdfa !important;
+        border: 1px dashed #06b6d4 !important;
+        color: #164e63 !important;
+        page-break-inside: avoid;
+      }
+
+      .analogy-box p {
+        color: #164e63 !important;
+      }
+
+      @page {
+        size: A4;
+        margin: 20mm;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="print-btn-container">
+    <button class="btn-print" onclick="window.print()">
+      🖨️ พิมพ์คู่มือ Angular 101 PDF
+    </button>
+  </div>
+
+  <div class="container">
+    
+    <div class="cover">
+      <span class="badge-101">Angular 101 Reference</span>
+      <h1>Angular 101: คู่มือปูพื้นฐานฉบับผู้เริ่มต้นจากศูนย์</h1>
+      <p class="subtitle">เรียนรู้วงจรคอมโพเนนต์เดี่ยว การตั้งค่าเส้นทางเว็บ การผูกข้อมูล และสเตทเทคโนโลยี Signals</p>
+    </div>
+
+    <h2>📌 1. ปรัชญาและโครงสร้างคอมโพเนนต์ (Component Anatomy)</h2>
+    <p>
+      Angular ยุคใหม่ (v15+) ขยายความสามารถให้ตัวเว็บประกอบขึ้นมาจากสิ่งเล็ก ๆ ที่เรียกว่า <strong>Component (คอมโพเนนต์)</strong> 
+      ซึ่งเป็นชิ้นส่วนบล็อกอิสระที่ภายในประกอบด้วย 3 ส่วนสำคัญทำหน้าที่ร่วมกัน:
+    </p>
+    <ol>
+      <li><strong>ไฟล์ตรรกะประมวลผล (TypeScript - `.ts`):</strong> ทำหน้าที่กำหนดสมองของคอมโพเนนต์ คอยคิดเลข ยิง API และสร้างสเตทข้อมูลตัวแปร</li>
+      <li><strong>ไฟล์หน้าจอโครงสร้าง (HTML Template - `.html`):</strong> จัดวางเลย์เอาต์ ป้ายข้อความ ช่องกรอกฟอร์ม และปุ่มต่าง ๆ</li>
+      <li><strong>ไฟล์ตกแต่งสีสัน (CSS Styles - `.css`):</strong> ตกแต่งความสวยงามเฉพาะตัวของการ์ดชิ้นนั้น ๆ โดยไม่ก้าวก่ายรบกวนคอมโพเนนต์อื่น</li>
+    </ol>
+
+    <p>ตัวอย่างการประกาศโครงสร้างโค้ด TypeScript บนคอมโพเนนต์เดี่ยว (Standalone Component):</p>
+    <pre><code>import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-hello-tag',     // 👈 ชื่อแท็กส่วนตัวเอาไว้เรียกใช้บน HTML (เช่น &lt;app-hello-tag&gt;)
+  standalone: true,              // 👈 ประกาศเป็นคอมโพเนนต์เดี่ยว สำเร็จรูปพร้อมรัน
+  template: `
+    &lt;div class="hello-box"&gt;
+      &lt;h3&gt;สวัสดี: {{ userName }}&lt;/h3&gt;
+    &lt;/div&gt;
+  `,
+  styles: `
+    .hello-box { padding: 10px; border: 1px solid purple; }
+  `
+})
+export class HelloTag {
+  userName = 'นักเรียนรู้หน้าบ้าน';
+}</code></pre>
+
+    <h2>📌 2. การเชื่อมโยงข้อมูล 4 มิติ (Data Bindings)</h2>
+    <p>
+      นี่คือหัวใจการทำหน้าที่ของพนักงานเสิร์ฟ! เป็นการรับส่งข้อมูลระหว่างตัวแปรใน TypeScript กับแท็กปุ่มบนหน้าจอ HTML มี 4 วิธีดังนี้:
+    </p>
+
+    <h3>1. แสดงค่าตัวแปรออกหน้าจอ (Text Interpolation - <code>{{ }}</code>)</h3>
+    <p>เป็นการดึงค่าในตัวแปรฝั่ง TypeScript มาพ่นพิมพ์ใส่เป็นป้ายข้อความบน HTML ด้วยเครื่องหมายปีกกาคู่:</p>
+    <pre><code>&lt;!-- ดึงตัวแปร message มาพิมพ์แสดง --&gt;
+&lt;p&gt;ข้อความแจ้งเตือน: {{ message }}&lt;/p&gt;</code></pre>
+
+    <h3>2. การส่งข้อมูลเข้าคุมแท็ก (Property Binding - <code>[property]="value"</code>)</h3>
+    <p>เป็นการเอาค่าตัวแปรฝั่ง TypeScript ไปควบคุมคุณสมบัติ (Attribute) ของแท็ก HTML เช่น สั่งปิดปุ่ม หรือเปลี่ยนพิกัดภาพ:</p>
+    <pre><code>&lt;!-- สั่งปิดปุ่มใช้งานตามค่าตัวแปร isLoading (ถ้าเป็น true ปุ่มจะกดไม่ได้) --&gt;
+&lt;button [disabled]="isLoading"&gt;ส่งข้อมูล&lt;/button&gt;</code></pre>
+
+    <h3>3. การดักรับการกดและพิมพ์ของผู้ใช้ (Event Binding - <code>(event)="method()"</code>)</h3>
+    <p>เมื่อลูกค้าคลิกหน้าจอหรือพิมพ์คีย์บอร์ด จะวิ่งไปสั่งฟังก์ชันใน TypeScript ให้ทำงาน:</p>
+    <pre><code>&lt;!-- เมื่อลูกค้าคลิกเมาส์ สั่งให้ฟังก์ชัน cutStock() ทำงานทันที --&gt;
+&lt;button (click)="cutStock()"&gt;📉 ตัดสต๊อก&lt;/button&gt;</code></pre>
+
+    <h3>4. การรับส่งข้อมูลสองทางสไตล์กรอกฟอร์ม (Two-Way Binding - <code>[(ngModel)]="value"</code>)</h3>
+    <p>ใช้กับฟอร์มกรอกตัวเลข/ตัวอักษร เมื่อคุณพิมพ์ในช่อง ข้อมูลตัวแปรในสมองจะอัปเดต และหากตัวแปรเปลี่ยน ตัวเลขในช่องจะวิ่งเปลี่ยนตามด้วยอัตโนมัติ:</p>
+    <pre><code>&lt;!-- ผูกโยงตัวแปร itemName เข้ามาที่ช่องกรอกตัวอักษรแบบเรียลไทม์ --&gt;
+&lt;input [(ngModel)]="itemName" placeholder="กรอกของใช้..." /&gt;</code></pre>
+
+    <h2>📌 3. การควบคุมโครงสร้างแสดงผลตัวใหม่ (Modern Control Flow)</h2>
+    <p>
+      Angular 17 ได้รับการปรับปรุงครั้งใหญ่ที่สุด โดยการยกเครื่องเงื่อนไข `@if` และการทำซ้ำ `@for` 
+      ให้มีความไวระดับเทพและจำง่ายมากสำหรับมือใหม่:
+    </p>
+
+    <h3>1. การสลับวิวหน้าจอตามเงื่อนไข (<code>@if / @else</code>)</h3>
+    <pre><code>@if (loading()) {
+  &lt;p&gt;🌀 กำลังโหลดข้อมูล...&lt;/p&gt;
+} @else {
+  &lt;p&gt;✅ โหลดรายการของใช้เสร็จเรียบร้อย!&lt;/p>
+}</code></pre>
+
+    <h3>2. การวนซ้ำลิสต์สินค้าออกมาโชว์ (<code>@for</code>)</h3>
+    <p>
+      การทำซ้ำด้วย <code>@for</code> ใน Angular บังคับให้ใส่คำสั่ง <code>track</code> เสมอ 
+      เพื่อคอยมองคีย์ระบุตัวตนของการ์ด ทำให้บราวเซอร์รู้เฉพาะจุดที่มีการลดสต๊อกและเปลี่ยนสีการ์ดใบเดียว ไม่โหลดพังการ์ดใบอื่นรอบ ๆ:
+    </p>
+    <pre><code>&lt;ul&gt;
+  @for (item of items(); track item.id) {
+    &lt;li&gt;{{ item.name }} - จำนวนคงเหลือ {{ item.currentStock }} {{ item.unit }}&lt;/li&gt;
+  } @empty {
+    &lt;p&gt;📂 ไม่มีของใช้ชิ้นใดอยู่ในบ้านของคุณเลย&lt;/p>
+  }
+&lt;/ul&gt;</code></pre>
+
+    <h2>📌 4. เจาะลึกความมหัศจรรย์ของ Angular Signals</h2>
+    <p>
+      เมื่อก่อนเราใช้ RxJS ในการอัปเดตสเตทข้อมูล ซึ่งมีไวยากรณ์เข้าใจยาก ซับซ้อน และลัดหาบั๊กยากมาก 
+      Angular จึงแก้ปัญหาโดยปล่อยเครื่องมือ **Signals** ออกมา:
+    </p>
+    <div class="analogy-box">
+      <p>
+        <strong>Signals คืออะไร?</strong><br>
+        เปรียบเหมือนตัวแปรทั่วไป แต่มีระบบ <strong>"สายไฟวิทยุคอยแผ่สัญญาณเสียงก้องรอบห้อง"</strong> 
+        ทุกครั้งที่คุณเปิดฟังหรือปรับเปลี่ยนค่า คลื่นจะไปอัปเดตวิวของหน้าเว็บจุดที่แปะป้ายไว้อัตโนมัติทันที
+      </p>
+    </div>
+
+    <h3>1. การประกาศโคมไฟคอยเฝ้าสัญญาณเดี๋ยว (<code>signal</code>)</h3>
+    <pre><code>// สร้างตัวเฝ้าสัญญาณเก็บตัวเลขสต๊อกปัจจุบัน เริ่มต้นด้วยค่า 10
+stock = signal&lt;number&gt;(10);
+
+// วิธีดึงตัวเลขในสัญญาณออกมาใช้งาน (ต้องใส่วงเล็บต่อท้ายตัวแปรเสมอ!)
+console.log(this.stock()); // ได้ผลลัพธ์ 10
+
+// วิธีการอัปเดตเปลี่ยนค่าสต๊อกในสัญญาณ
+this.stock.set(5); // สั่งสวิทช์เป็นค่า 5 หน้าจอที่มีตัวแปรนี้จะเปลี่ยนเลขตามทันที!</code></pre>
+
+    <h3>2. ⭐️ ตัวทรานสฟอร์เมอร์สูตรอัตโนมัติ (<code>computed</code>)</h3>
+    <p>
+      เป็นสัญญาณระดับรองที่ไม่มีคิวเก็บข้อมูลเดี่ยวเป็นของตัวเอง แต่จะแอบเอาคีย์สัญญาณดิบตัวหลักมาคอยประเมินคำนวณสูตรเลขตลอดเวลา:
+    </p>
+    <pre><code>// ดักวิทยุของตัวแปร stock ตลอดเวลาเพื่อคำนวณเป็นร้อยละ
+percent = computed(() => {
+  const current = this.stock();
+  const maxCapacity = 20;
+  return (current / maxCapacity) * 100; // คิดเลขคำนวณร้อยละทันทีเมื่อตัวแปร stock เปลี่ยนแปลง!
+});</code></pre>
+
+    <h2>📌 5. สถาปัตยกรรมจัดระเบียบองค์กร (Core / Shared / Features)</h2>
+    <p>
+      เพื่อให้โครงการไม่รกรุงรังเมื่อขยายตัว เรานิยมกรุ๊ปไฟล์แบ่งตามความรับผิดชอบ:
+    </p>
+    <ul>
+      <li><strong>`core/` (แกนหลักบ้านชิ้นเดียว):</strong> เก็บของที่อุปโลกน์ขึ้นมารันเพียงครั้งเดียวทั้งแอป เช่น ตัวต่อ API, ตัวกรองความปลอดภัย Guard, Navbar สรุปแถมบนสุด</li>
+      <li><strong>`shared/` (ห้องสมุดของส่วนกลาง):</strong> เป็นตู้เก็บชิ้นส่วนแบบ dumb (ไม่มีตรรกะเฝ้าสเตท) เช่น ปุ่มกดกลม ๆ ใส ๆ, กล่องยืนยันข้อความ Alert ที่หน้าไหนก็เรียกหยิบไปวางขยายได้</li>
+      <li><strong>`features/` (หน้าเว็บย่อย):</strong> หน้าวิวหลัก ๆ แยกสัดส่วน เช่น แดชบอร์ดในบ้าน, ประวัติการลดสต๊อก ซึ่งภายในจะมี HTML และ CSS เฉพาะเจาะจงของมันเอง</li>
+    </ul>
+
+  </div>
+
+</body>
+</html>

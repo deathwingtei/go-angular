@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>คู่มือพัฒนาระบบ Smart Home Inventory สำหรับผู้เริ่มต้น 100%</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-color: #0b0c16;
+      --card-bg: rgba(19, 21, 46, 0.7);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --primary: #00f0ff;
+      --secondary: #bd5cfa;
+      --text-color: #e2e8f0;
+      --text-muted: #94a3b8;
+      --code-bg: rgba(5, 6, 15, 0.85);
+      --danger: #ff4b72;
+      --warning: #ffb119;
+      --success: #05d68d;
+      --highlight: #ffee55;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-family: 'Sarabun', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.7;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+    }
+
+    .print-btn-container {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: 100;
+    }
+
+    .btn-print {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 28px;
+      background: linear-gradient(135deg, #00f0ff 0%, #bd5cfa 100%);
+      color: white;
+      border: none;
+      border-radius: 35px;
+      font-family: 'Sarabun', sans-serif;
+      font-weight: 800;
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: 0 5px 25px rgba(0, 240, 255, 0.5);
+      transition: all 0.3s ease;
+    }
+
+    .btn-print:hover {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 8px 30px rgba(0, 240, 255, 0.7);
+    }
+
+    /* Cover styling */
+    .cover {
+      text-align: center;
+      margin-bottom: 4rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 3rem;
+    }
+
+    .badge-beginner {
+      background: linear-gradient(135deg, #ffb119, #ff4b72);
+      color: #0b0c16;
+      font-weight: 800;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      display: inline-block;
+      margin-bottom: 1rem;
+      box-shadow: 0 0 15px rgba(255, 177, 25, 0.3);
+    }
+
+    h1 {
+      font-family: 'Outfit', 'Sarabun', sans-serif;
+      font-size: 2.8rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #ffffff 30%, #c7d2fe 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin: 0 0 1rem 0;
+      letter-spacing: -0.5px;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 1.2rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Section structure */
+    h2 {
+      font-family: 'Outfit', 'Sarabun', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 800;
+      border-left: 5px solid var(--primary);
+      padding-left: 1rem;
+      margin-top: 3.5rem;
+      margin-bottom: 1.5rem;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    h3 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding-bottom: 0.3rem;
+    }
+
+    p {
+      font-size: 1.05rem;
+      color: #cbd5e1;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Real-world Analogy box */
+    .analogy-box {
+      background: rgba(5, 214, 141, 0.06);
+      border: 1px solid rgba(5, 214, 141, 0.2);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin: 2rem 0;
+      position: relative;
+    }
+
+    .analogy-box::before {
+      content: "💡 เปรียบเทียบกับชีวิตจริง";
+      position: absolute;
+      top: -12px;
+      left: 20px;
+      background: var(--success);
+      color: #0b0c16;
+      font-size: 0.8rem;
+      font-weight: 800;
+      padding: 2px 12px;
+      border-radius: 20px;
+      box-shadow: 0 4px 10px rgba(5, 214, 141, 0.3);
+    }
+
+    .analogy-box p {
+      margin: 0;
+      color: #a7f3d0;
+      font-size: 0.98rem;
+    }
+
+    .note-alert {
+      background: rgba(255, 75, 114, 0.08);
+      border-left: 4px solid var(--danger);
+      border-radius: 0 16px 16px 0;
+      padding: 1.2rem 1.8rem;
+      margin: 2rem 0;
+    }
+
+    .note-alert h4 {
+      margin: 0 0 6px 0;
+      color: var(--danger);
+      font-weight: 800;
+      font-size: 1.1rem;
+    }
+
+    .note-alert p {
+      margin: 0;
+      color: #fecdd3;
+    }
+
+    ul, ol {
+      padding-left: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    li {
+      margin-bottom: 0.6rem;
+      color: #cbd5e1;
+      font-size: 1.02rem;
+    }
+
+    /* Code highlights */
+    code {
+      font-family: 'Consolas', 'Courier New', monospace;
+      background: var(--code-bg);
+      padding: 3px 7px;
+      border-radius: 6px;
+      color: #ff7597;
+      font-size: 0.95em;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      margin: 1.5rem 0;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    pre code {
+      background: none;
+      padding: 0;
+      color: #38bdf8;
+      font-size: 0.92rem;
+      border: none;
+    }
+
+    /* Inline comments styling inside code block */
+    .c-comment {
+      color: #64748b !important;
+      font-style: italic;
+    }
+
+    .c-keyword { color: #f43f5e; font-weight: bold; }
+    .c-type { color: #3b82f6; }
+    .c-string { color: #10b981; }
+
+    /* Step badges */
+    .step-badge {
+      background: rgba(0, 240, 255, 0.1);
+      color: var(--primary);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      border-radius: 8px;
+      padding: 2px 10px;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    /* Print styling stylesheet override */
+    @media print {
+      body {
+        background-color: white !important;
+        color: black !important;
+        font-size: 11pt !important;
+      }
+      
+      .container {
+        max-width: 100% !important;
+        padding: 0 !important;
+      }
+
+      .print-btn-container {
+        display: none !important;
+      }
+
+      .cover {
+        border-bottom: 2px solid #333 !important;
+        margin-bottom: 2rem !important;
+        padding-bottom: 1.5rem !important;
+      }
+
+      h1 {
+        background: none !important;
+        -webkit-text-fill-color: black !important;
+        color: black !important;
+        font-size: 26pt !important;
+      }
+
+      .subtitle {
+        color: #444 !important;
+      }
+
+      h2 {
+        color: #000 !important;
+        border-left: 5px solid #000 !important;
+        page-break-after: avoid;
+      }
+
+      h3 {
+        color: #111 !important;
+        border-bottom: 1px solid #777 !important;
+        page-break-after: avoid;
+      }
+
+      p, li {
+        color: #111 !important;
+      }
+
+      code {
+        background: #f1f5f9 !important;
+        color: #0f172a !important;
+        border: 1px solid #cbd5e1 !important;
+      }
+
+      pre {
+        background: #f8fafc !important;
+        border: 1px solid #cbd5e1 !important;
+        box-shadow: none !important;
+        page-break-inside: avoid;
+      }
+
+      pre code {
+        color: #0f172a !important;
+      }
+
+      .analogy-box {
+        background: #f0fdf4 !important;
+        border: 1px dashed #16a34a !important;
+        color: #14532d !important;
+        page-break-inside: avoid;
+      }
+
+      .analogy-box p {
+        color: #14532d !important;
+      }
+
+      .note-alert {
+        background: #fff1f2 !important;
+        border-left: 4px solid #e11d48 !important;
+        color: #4c0519 !important;
+        page-break-inside: avoid;
+      }
+
+      .note-alert h4 {
+        color: #9f1239 !important;
+      }
+
+      .note-alert p {
+        color: #4c0519 !important;
+      }
+
+      @page {
+        size: A4;
+        margin: 20mm;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Floating Print Control Button -->
+  <div class="print-btn-container">
+    <button class="btn-print" onclick="window.print()">
+      🖨️ บันทึกเป็น PDF คู่มือเรียนรู้
+    </button>
+  </div>
+
+  <div class="container">
+    
+    <!-- Cover -->
+    <div class="cover">
+      <span class="badge-beginner">เริ่มต้นจากศูนย์ 100%</span>
+      <h1>คู่มือเรียนรู้และสร้างแอปพลิเคชันจากศูนย์</h1>
+      <p class="subtitle">เขียนโค้ดและทำความเข้าใจ Go Backend (REST API) & Angular (Signals) สำหรับผู้เริ่มต้นที่ไม่มีพื้นฐานเลย</p>
+    </div>
+
+    <!-- Section 1 -->
+    <h2>🧩 1. ความเข้าใจเบื้องต้น: สองภาษาทำงานร่วมกันอย่างไร?</h2>
+    <p>
+      หากคุณไม่เคยเขียนโปรแกรมมาก่อน ลองจินตนาการระบบนี้เหมือน <strong>"ร้านขายอาหารตามสั่ง"</strong>:
+    </p>
+    <ul>
+      <li><strong>Go Backend (หลังบ้าน):</strong> ทำหน้าที่เหมือน <strong>"พ่อครัวในห้องครัว"</strong> คอยจัดแจงของใช้ ทำนายคำนวณสูตรว่านมกล่องนี้จะหมดในอีกกี่วันตามสถิติเก็บข้อมูล พ่อครัวจะไม่คุยกับลูกค้าโดยตรง แต่จะคอยทำอาหาร (เตรียมข้อมูล JSON) วางไว้ที่หน้าตู้ส่งของ (API Endpoint)</li>
+      <li><strong>Angular Frontend (หน้าบ้าน):</strong> ทำหน้าที่เหมือน <strong>"พนักงานเสิร์ฟผู้น่ารัก"</strong> คอยเดินไปต้อนรับลูกค้า ยื่นสมุดเมนูสวย ๆ ให้เลือก (หน้าแดชบอร์ด) คอยรับคำสั่งลูกค้าแล้วเดินเอาออเดอร์นั้น (HTTP Request) ไปบอกพ่อครัวในห้องครัว เมื่อได้รับของก็รีบนำมาจัดวางบนโต๊ะให้ลูกค้าอย่างลื่นไหลและมีสไตล์</li>
+    </ul>
+
+    <div class="analogy-box">
+      <p>
+        <strong>เปรียบเทียบในชีวิตจริง:</strong><br>
+        เวลาคุณเปิดเว็บ จอภาพและการ์ดใส ๆ ที่คุณคลิกกดตัดสต๊อกนั่นคือฝั่ง <strong>Angular</strong> 
+        แต่ตัวแปรปริมาณสต๊อกที่เปลี่ยนไปและการคำนวณวันทำนายจะถูกส่งผ่านสายเคเบิลอินเทอร์เน็ตไปคิดเลขใน <strong>Go</strong> 
+        แล้วสะท้อนข้อมูลกลับมาแสดงผลทันที!
+      </p>
+    </div>
+
+    <!-- Section 2 -->
+    <h2>🐹 2. เจาะลึกฝั่ง Go Backend (สำหรับผู้เริ่มต้น)</h2>
+    <p>
+      ภาษา Go เป็นภาษาที่เด่นในเรื่องความรวดเร็วและกินแรมน้อยมาก เหมาะมากที่จะนำมาทำตัวประมวลผลข้อมูล
+    </p>
+
+    <h3>🛠️ สิ่งที่ต้องรู้จัก 1: Struct (กล่องจัดระเบียบของใช้)</h3>
+    <p>
+      ในภาษา Go เมื่อต้องการประกาศ "กลุ่มข้อมูล" เราจะใช้คีย์เวิร์ด <code>struct</code> (อ่านว่า สะ-ตรัค-ต) 
+      เปรียบเสมือน <strong>"กล่องใบใหญ่ที่แปะป้ายระบุข้างกล่องว่าข้างในเก็บอะไรบ้าง"</strong> เช่น แปะป้ายบอกชื่อ ปริมาณ และหน่วยนับ
+    </p>
+    <p>ลองมาดูการสร้างไฟล์โมดูลข้อมูลชิ้นแรกในโฟลเดอร์โครงการที่ไฟล์ <code>internal/models/item.go</code>:</p>
+
+    <pre><code><span class="c-keyword">package</span> models
+
+<span class="c-keyword">import</span> <span class="c-string">"time"</span> <span class="c-comment">// นำเข้าไลบรารีเวลา</span>
+
+<span class="c-comment">// InventoryItem คือกล่องระบุว่าของใช้ในบ้านมีคุณสมบัติอะไรบ้าง</span>
+<span class="c-keyword">type</span> InventoryItem <span class="c-keyword">struct</span> {
+	ID                <span class="c-type">string</span>    `json:"id"`                <span class="c-comment">// ชื่อ ID สลักติดสินค้า</span>
+	Name              <span class="c-type">string</span>    `json:"name"`              <span class="c-comment">// ชื่อของชิ้นนั้น (เช่น "นมสด")</span>
+	Category          <span class="c-type">string</span>    `json:"category"`          <span class="c-comment">// หมวดหมู่ (เช่น "ห้องครัว")</span>
+	CurrentStock      <span class="c-type">float64</span>   `json:"currentStock"`      <span class="c-comment">// จำนวนที่มีในสต๊อกตอนนี้</span>
+	BaseQuantity      <span class="c-type">float64</span>   `json:"baseQuantity"`      <span class="c-comment">// จำนวนเต็มตอนเติมเต็มขวด</span>
+	Unit              <span class="c-type">string</span>    `json:"unit"`              <span class="c-comment">// หน่วยนับ เช่น "ขวด", "ml"</span>
+	LastRestockDate   time.Time `json:"lastRestockDate"`   <span class="c-comment">// วันที่บันทึกเติมล่าสุด</span>
+	ReplenishmentDate time.Time `json:"replenishmentDate"`  <span class="c-comment">// วันคาดการณ์สินค้าหมดคลัง</span>
+}</code></pre>
+
+    <div class="analogy-box">
+      <p>
+        <strong>สัญลักษณ์แปลก ๆ ด้านหลังฟิลด์คืออะไร? (Struct Tags):</strong><br>
+        สัญลักษณ์ <code>`json:"currentStock"`</code> คือการเขียนป้ายบอกตัวภาษา Go ว่า: "เวลาเธอแปลงกล่องนี้ให้กลายเป็น JSON เพื่อส่งผ่านเน็ตไปให้ Angular ช่วยกรุณาเปลี่ยนคำว่า <code>CurrentStock</code> (ภาษา Go นิยมขึ้นต้นพิมพ์ใหญ่) เป็นคำว่า <code>currentStock</code> (คีย์พิมพ์เล็กสไตล์ JavaScript) ด้วยนะ"
+      </p>
+    </div>
+
+    <h3>🛠️ สิ่งที่ต้องรู้จัก 2: Concurrency & RWMutex (กุญแจห้องน้ำสำหรับ Goroutine)</h3>
+    <p>
+      เมื่อเราเปิดรัน REST API ขึ้นมา เซิร์ฟเวอร์ Go จะรองรับคนเรียกเข้าใช้งานหลายคนพร้อมกันในเวลาเสี้ยววินาที 
+      ภาษา Go จะสร้างเส้นด้ายการทำงานขนานกันที่เรียกว่า <strong>Goroutine</strong> มาคอยประมวลผลคำขอ
+    </p>
+    <p>
+      ลองนึกภาพ: ถ้าคนในบ้าน 2 คนกดปุ่ม "ลดสต๊อก" ในเสี้ยววินาทีเดียวกัน หากไม่มีเครื่องมือห้ามคิว โค้ดของเราจะอ่านข้อมูลพร้อมกัน ข้อมูลจะเพี้ยนหรือพังทันที! 
+      เราแก้ปัญหานี้โดยใช้ <code>sync.RWMutex</code> เปรียบเสมือน <strong>"กุญแจห้องน้ำ"</strong>:
+    </p>
+    <ul>
+      <li><strong>สิทธิ์การอ่าน (RLock):</strong> เหมือนห้องน้ำที่มีกระจกส่องหน้าบานใหญ่ คนสามารถยืนอ่านดูสต๊อก (มองส่องกระจก) พร้อมกันได้หลายคนโดยไม่อันตราย</li>
+      <li><strong>สิทธิ์การเขียน (Lock):</strong> เหมือนการเข้าห้องน้ำแบบทำธุระส่วนตัว ทันทีที่มีคนจะเปลี่ยนสต๊อก (เข้าห้องน้ำไปเปลี่ยนกางเกง) จะต้องล็อคสิทธิ์ไว้ ห้ามใครเข้ามาอ่านหรือเขียนเด็ดขาดจนกว่าจะเสร็จธุระ!</li>
+    </ul>
+
+    <p>ดูโค้ดจัดการ Database จำลองที่ไฟล์ <code>internal/repository/inmemory.go</code>:</p>
+
+    <pre><code><span class="c-keyword">package</span> repository
+
+<span class="c-keyword">import</span> (
+	<span class="c-string">"errors"</span>
+	<span class="c-string">"my-go-app/internal/models"</span>
+	<span class="c-string">"sync"</span> <span class="c-comment">// 👈 เรียกใช้ sync เพื่อเอา Mutex มาไขกุญแจ</span>
+)
+
+<span class="c-keyword">type</span> InMemoryItemRepository <span class="c-keyword">struct</span> {
+	mu    sync.RWMutex <span class="c-comment">// 👈 กุญแจควบคุมคนอ่าน/เขียน</span>
+	items map[<span class="c-type">string</span>]models.InventoryItem
+}
+
+<span class="c-comment">// อ่านสินค้า (คนเข้าอ่านพร้อมกันได้)</span>
+<span class="c-keyword">func</span> (r *InMemoryItemRepository) GetAll() ([]models.InventoryItem, <span class="c-type">error</span>) {
+	r.mu.RLock()         <span class="c-comment">// 👈 ล็อคเพื่ออ่าน (ใครจะเขียนรอก่อน ใครจะอ่านด้วยกันเชิญเลย!)</span>
+	<span class="c-keyword">defer</span> r.mu.RUnlock() <span class="c-comment">// 👈 ปลดล็อคอัตโนมัติเมื่อทำฟังก์ชันเสร็จสิ้น</span>
+
+	items := make([]models.InventoryItem, 0, len(r.items))
+	for _, item := range r.items {
+		items = append(items, item)
+	}
+	<span class="c-keyword">return</span> items, <span class="c-keyword">nil</span>
+}
+
+<span class="c-comment">// แก้ไขสต๊อกสินค้า (ห้ามอ่านห้ามเปลี่ยนแปลงทับซ้อน)</span>
+<span class="c-keyword">func</span> (r *InMemoryItemRepository) Update(item models.InventoryItem) (models.InventoryItem, <span class="c-type">error</span>) {
+	r.mu.Lock()         <span class="c-comment">// 👈 ล็อคสิทธิ์ขาด (ห้ามใครแตะต้องเลย ฉันจะเปลี่ยนค่าแปร!)</span>
+	<span class="c-keyword">defer</span> r.mu.Unlock() <span class="c-comment">// 👈 ปลดล็อคเมื่อเขียนเสร็จ</span>
+
+	if _, exists := r.items[item.ID]; !exists {
+		<span class="c-keyword">return</span> models.InventoryItem{}, errors.New(<span class="c-string">"item not found"</span>)
+	}
+	r.items[item.ID] = item
+	<span class="c-keyword">return</span> item, <span class="c-keyword">nil</span>
+}</code></pre>
+
+    <!-- Section 3 -->
+    <h2>📐 3. เจาะลึกฝั่ง Angular Frontend (สำหรับผู้เริ่มต้น)</h2>
+    <p>
+      Angular เป็นเฟรมเวิร์กสร้างหน้าเว็บที่ออกแบบมาเพื่อให้หน้าจอมีความเสถียรและทนทานมาก
+    </p>
+
+    <h3>🛠️ สิ่งที่ต้องรู้จัก 1: Standalone Component & Route (การจัดพาร์ทและหน้าจอเดี่ยว)</h3>
+    <p>
+      ใน Angular รุ่นเก่า การจะสร้างปุ่มหรือหน้าเว็บสักหน้า คุณต้องสร้างไฟล์และนำมาประกาศลงทะเบียนในสิ่งที่เรียกว่า `NgModule` วุ่นวายและซับซ้อนมาก 
+      แต่ใน Angular 17+ เรามีระบบ <strong>Standalone Component</strong>:
+    </p>
+    <div class="analogy-box">
+      <p>
+        <strong>เปรียบเทียบในชีวิตจริง:</strong><br>
+        คอมโพเนนต์เดี่ยว (Standalone) เหมือน <strong>"เครื่องใช้ไฟฟ้ากล่องสำร็จรูปสำเร็จรูป"</strong> 
+        ที่มีหัวปลั๊กไฟในตัว (Imports) คุณสามารถซื้อทีวี (Component) เสียบปลั๊กเปิดเล่นได้ทันที โดยไม่ต้องผ่านศูนย์ควบคุมบอร์ดไฟกลางของบ้านอีกต่อไป!
+      </p>
+    </div>
+
+    <p>วิธีกำหนดหน้าพาร์ทเร้าติ้งของเว็บที่ไฟล์ <code>src/app/app.routes.ts</code>:</p>
+    <pre><code>import { Routes } from '@angular/router';
+import { Dashboard } from './features/dashboard/dashboard';
+
+export const routes: Routes = [
+  {
+    path: '',              // 👈 หากผู้ใช้เปิดหน้าเว็บมาว่าง ๆ (เช่น http://localhost:4200)
+    component: Dashboard,  // 👈 สั่งให้แสดงผลหน้าจอ Dashboard ขึ้นมาทันที
+  }
+];</code></pre>
+
+    <h3>🛠️ สิ่งที่ต้องรู้จัก 2: Signals & computed (โคมไฟอัจฉริยะกะพริบแจ้งเตือนคอยเฝ้าสถิติ)</h3>
+    <p>
+      นี่คือนวัตกรรมที่ดีที่สุดของหน้าบ้าน! ในหน้าจอระบบเดิม ๆ เวลาคุณเปลี่ยนสต๊อก คุณต้องสั่งให้เว็บหน้าจอทำการรีเฟรชรีเซ็ตโหลดตัวเว็บใหม่ (F5) ซึ่งช้ามาก 
+      ระบบยุคใหม่จึงแก้ด้วยการทำ **Reactive State** และใช้ **Signals**:
+    </p>
+    <ul>
+      <li><strong>Signal (ตัวส่งสัญญาณ - `signal`):</strong> เหมือน <strong>"โคมไฟสีเปลี่ยนสีได้"</strong> เมื่อปริมาณของลดลง โคมไฟดวงนี้จะส่งคลื่นวิทยุออกไปบอกคนรอบ ๆ ว่า "ฉันเหลือสต๊อก 2 ขวดแล้วนะ!"</li>
+      <li><strong>Computed (ตัวแปลงผลสัญญาณอัตโนมัติ - `computed`):</strong> เหมือน <strong>"ป้ายอัจฉริยะไฟสัญญาณเตือนวิกฤต"</strong> ที่ไม่เก็บข้อมูลเดี่ยว แต่จะผูกสายสัญญาณเชื่อมไว้กับโคมไฟสต๊อก เมื่อใดก็ตามที่วิทยุของโคมไฟขยับเปลี่ยนตัวเลข ป้ายเตือนนี้จะคำนวณสูตรคณิตศาสตร์ทันทีโดยอัตโนมัติ ไม่ต้องสั่งรีโหลดหน้าจอใหม่!</li>
+    </ul>
+
+    <p>ดูโค้ดสร้างกล่องจัดระเบียบสัญญาณในไฟล์ <code>src/app/core/services/inventory.service.ts</code>:</p>
+
+    <pre><code>import { Injectable, signal, computed } from '@angular/core';
+import { InventoryItem } from '../models/inventory-item';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class InventoryService {
+  // 1. สร้างสัญญาณดิบเก็บลิสต์สินค้า (เหมือนโคมไฟส่องสว่างส่งวิทยุได้)
+  private _items = signal&lt;InventoryItem[]&gt;([]);
+  items = this._items.asReadonly(); // ให้คนนอกดึงอ่านได้อย่างเดียว ป้องกันการแก้ไขนอกระบบ
+
+  // 2. ⭐️ computed มหัศจรรย์: คอยดักฟัง _items() เปลี่ยนแปลง เพื่อทำสูตรเลขทันที
+  totalItems = computed(() => this._items().length); // หาจำนวนชิ้นรวมในบ้าน
+
+  // คอยกรองรายการสินค้าที่จัดเป็นระดับวิกฤตสต๊อกต่ำกว่า 20% อัตโนมัติ
+  lowStockItems = computed(() =>
+    this._items().filter((item) => item.currentStock / item.baseQuantity <= 0.20)
+  );
+
+  lowStockCount = computed(() => this.lowStockItems().length); // คำนวณจำนวนชิ้นที่ไฟแดงเตือน
+}</code></pre>
+
+    <div class="note-alert">
+      <h4>🚨 ประโยชน์มหึมาของ Signals</h4>
+      <p>
+        ด้วย Signals และ computed ทำให้เวลาคุณกดลดสต๊อกนมสด แถบวงกลมแสดงความคืบหน้า HSL และจำนวนสรุปไฟแดงวิกฤตด้านบนแดชบอร์ดจะกระพริบอัปเดตสีและจำนวนใหม่ทันทีภายใน 0.001 วินาที โดยไม่ต้องรีเฟรชหน้าเว็บทั้งแผ่น!
+      </p>
+    </div>
+
+    <!-- Section 4 -->
+    <h2>🚀 4. คู่มือรันคำสั่งและการรันเซิร์ฟเวอร์ครั้งแรกสำหรับมือใหม่</h2>
+    <p>
+      หลังจากที่คุณพิมพ์โค้ดเสร็จเรียบร้อย การเชื่อมโยงให้ทั้ง 2 ฝั่งทำงานร่วมกันทำได้ง่าย ๆ ดังนี้:
+    </p>
+
+    <h3>📌 ขั้นตอนฝั่ง Go Backend (พอร์ต :8080)</h3>
+    <ol>
+      <li>เปิดโปรแกรม Terminal หรือ Command Prompt ขึ้นมาแล้วพิมพ์คำสั่งย้ายโฟลเดอร์เข้าไปในไดเรกทอรีโครงการฝั่ง API</li>
+      <li>พิมพ์คำสั่งเพื่อดาวน์โหลดโมดูลและรันโครงการ:
+        <pre><code>go run cmd/server/main.go</code></pre>
+      </li>
+      <li>คุณจะเห็นข้อความ <code>[GIN-debug] Listening and serving HTTP on :8080</code> ปรากฏขึ้น เป็นสัญญาณว่าด่านหลังบ้านพร้อมทำหน้าที่ปรุงออเดอร์แล้ว!</li>
+    </ol>
+
+    <h3>📌 ขั้นตอนฝั่ง Angular Frontend (พอร์ต :4200)</h3>
+    <ol>
+      <li>เปิดโปรแกรม Terminal แยกขึ้นมาอีกหน้าต่างหนึ่ง แล้วขยับโฟลเดอร์เข้าไปที่ <code>web/</code> ของหน้าบ้าน</li>
+      <li>พิมพ์คำสั่งรันระบบเซิร์ฟเวอร์พัฒนาผ่านคำสั่งพิมพ์เพื่อรัน:
+        <pre><code>npm start</code></pre>
+      </li>
+      <li>หากมีข้อผิดพลาดระบบการเปิดใช้ PowerShell ของเครื่อง Windows ให้พิมพ์คำสั่งหลบหลีกแทนดังนี้:
+        <pre><code>cmd /c npm start</code></pre>
+      </li>
+      <li>เมื่อการบิวด์เสร็จสมบูรณ์ จะปรากฏข้อความระบุ <code>➜  Local: http://localhost:4200/</code></li>
+      <li>ให้ใช้เมาส์คลิกเปิดลิงก์เบราว์เซอร์ไปที่ [http://localhost:4200/](http://localhost:4200/) คุณจะเข้าสัมผัสความสวยงามและใช้งานระบบทำนายของใช้อัจฉริยะได้ทันที!</li>
+    </ol>
+
+    <h2>🖨️ คำแนะนำการเปิดใช้เครื่องมือบันทึก PDF เลย์เอาต์</h2>
+    <div class="note-alert" style="background: rgba(5, 214, 141, 0.06); border-left: 4px solid var(--success);">
+      <h4>📥 การพิมพ์เป็น PDF คมชัด 100%</h4>
+      <p style="color: #a7f3d0;">
+        เมื่ออ่านคู่มือนี้บนเว็บบราวเซอร์ของคุณ (Edge หรือ Chrome) คุณสามารถคลิกปุ่ม **"🖨️ บันทึกเป็น PDF คู่มือเรียนรู้"** 
+        ที่ลอยตัวอยู่มุมล่างขวา ระบบจะซ่อนปุ่มและทำการแปลงเลย์เอาต์ทั้งหมดของคู่มือนี้ให้อยู่ในสไตล์รูปแบบสีของหนังสือพิมพ์ 
+        พร้อมตัดคำภาษาไทยได้อย่างถูกต้องไร้ปัญหาสระลอย เพื่อให้คุณสามารถเซฟเป็น PDF เก็บไว้อ่านหรือปริ้นท์ออกทางกระดาษ A4 ได้ทันที!
+      </p>
+    </div>
+
+  </div>
+
+</body>
+</html>
